@@ -78,17 +78,29 @@ document.querySelectorAll('.exp-block').forEach((bl, i) => {
     bl.style.transitionDelay = (i * 0.12) + 's';
 });
 
-/* ===== Card parallax on mouse ===== */
+/* ===== Card parallax + cursor glow on mouse ===== */
 document.querySelectorAll('.card').forEach(card => {
     card.addEventListener('mousemove', e => {
         const rect = card.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width - 0.5;
         const y = (e.clientY - rect.top) / rect.height - 0.5;
         card.style.transform = 'translateY(-4px) perspective(1000px) rotateX(' + (-y * 3) + 'deg) rotateY(' + (x * 3) + 'deg)';
+        // Cursor glow
+        card.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
+        card.style.setProperty('--my', (e.clientY - rect.top) + 'px');
     });
     card.addEventListener('mouseleave', () => {
         card.style.transform = '';
     });
+});
+
+/* ===== Smooth scroll progress bar ===== */
+const progressBar = document.createElement('div');
+progressBar.className = 'scroll-progress';
+document.body.appendChild(progressBar);
+window.addEventListener('scroll', () => {
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    progressBar.style.transform = 'scaleX(' + (scrollY / h) + ')';
 });
 
 }); // DOMContentLoaded
