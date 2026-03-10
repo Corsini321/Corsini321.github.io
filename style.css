@@ -86,6 +86,13 @@ a.card{text-decoration:none;color:inherit;cursor:pointer}
 .card-video{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:500;color:var(--gray1);padding:6px 14px;border-radius:999px;border:1px solid var(--gray2);transition:all .3s;cursor:pointer}
 .card-video:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px)}
 .card-video svg{flex-shrink:0}
+/* Disabled card (private repo) */
+.card-disabled{cursor:default}
+.card-disabled:hover{transform:none;box-shadow:none}
+.card-disabled .card-arrow{opacity:.3}
+.card-disabled:hover .card-arrow{transform:none;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6)}
+.card-disabled:hover .card-body h3{color:inherit}
+.disabled-cta{color:var(--gray2)!important;font-weight:500}
 
 /* ===== Skills ===== */
 .sec-skills{padding:120px 0;background:var(--gray3)}
@@ -139,9 +146,9 @@ a.card{text-decoration:none;color:inherit;cursor:pointer}
 .card::before{content:'';position:absolute;inset:0;border-radius:20px;background:radial-gradient(600px circle at var(--mx) var(--my),rgba(168,85,247,.06),transparent 40%);opacity:0;transition:opacity .4s;pointer-events:none;z-index:1}
 .card:hover::before{opacity:1}
 
-/* ===== Stagger alt cards (odd = reversed) ===== */
-.card:nth-child(even){direction:rtl}
-.card:nth-child(even) > *{direction:ltr}
+/* ===== Stagger alt cards (2nd & 4th reversed) ===== */
+.card:nth-child(2n+1){direction:rtl}
+.card:nth-child(2n+1) > *{direction:ltr}
 
 /* ===== Scroll progress bar ===== */
 .scroll-progress{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform-origin:left;transform:scaleX(0);z-index:200;pointer-events:none}
@@ -156,7 +163,7 @@ a.card{text-decoration:none;color:inherit;cursor:pointer}
     .nav-links.open{display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(251,251,253,.96);backdrop-filter:blur(20px);padding:20px 24px;gap:14px;box-shadow:0 4px 20px rgba(0,0,0,.04)}
     .burger{display:flex}
     .card{grid-template-columns:1fr}
-    .card:nth-child(even){direction:ltr}
+    .card:nth-child(2n+1){direction:ltr}
     .card-visual{aspect-ratio:16/9}
     .card-body{padding:32px 24px}
     .card-num{font-size:3rem}
