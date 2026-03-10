@@ -374,6 +374,17 @@ ul { list-style: none; }
     box-shadow: none;
 }
 
+.btn-video {
+    border-color: rgba(255, 0, 0, 0.3);
+    color: #ff4444;
+}
+
+.btn-video:hover {
+    border-color: #ff4444;
+    color: #ff4444;
+    background: rgba(255, 0, 0, 0.08);
+}
+
 /* ===== Sections ===== */
 .section {
     padding: 100px 0;
