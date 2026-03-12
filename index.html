@@ -356,10 +356,8 @@
                 </div>
                 <p class="admin-drop-title">拖拽 PDF 到这里</p>
                 <p class="admin-drop-sub">自动识别内容并生成博客文章</p>
-                <label class="admin-drop-btn">
-                    或点击选择文件
-                    <input type="file" id="adminFileInput" accept=".pdf" style="display:none">
-                </label>
+                <button type="button" class="admin-drop-btn" id="adminSelectBtn">或点击选择文件</button>
+                <input type="file" id="adminFileInput" accept=".pdf" style="display:none">
             </div>
             <div class="admin-progress" id="adminProgress" style="display:none">
                 <div class="admin-progress-bar"><div class="admin-progress-fill" id="adminProgressFill"></div></div>

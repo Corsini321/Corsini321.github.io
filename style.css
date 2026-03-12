@@ -268,7 +268,7 @@ a.card{text-decoration:none;color:inherit;cursor:pointer}
 .admin-drop-zone:hover .admin-drop-icon,.admin-drop-zone.drag-over .admin-drop-icon{color:var(--accent)}
 .admin-drop-title{font-size:1.1rem;font-weight:700;color:var(--black);margin-bottom:6px}
 .admin-drop-sub{font-size:.82rem;color:var(--gray1);margin-bottom:16px}
-.admin-drop-btn{display:inline-block;padding:8px 24px;border-radius:999px;border:1px solid var(--gray2);font-size:.82rem;font-weight:600;color:var(--accent);cursor:pointer;transition:all .3s}
+.admin-drop-btn{display:inline-block;padding:8px 24px;border-radius:999px;border:1px solid var(--gray2);font-size:.82rem;font-weight:600;color:var(--accent);cursor:pointer;transition:all .3s;background:transparent;font-family:var(--font)}
 .admin-drop-btn:hover{border-color:var(--accent);background:rgba(168,85,247,.06)}
 
 /* Progress bar */

@@ -422,7 +422,7 @@ adminDropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     adminDropZone.classList.remove('drag-over');
     const file = e.dataTransfer.files[0];
-    if (file && file.type === 'application/pdf') {
+    if (file && (file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'))) {
         handlePdfFile(file);
     } else {
         alert('请拖入 PDF 文件');
@@ -433,8 +433,9 @@ adminFileInput.addEventListener('change', (e) => {
     if (file) handlePdfFile(file);
     adminFileInput.value = '';
 });
-adminDropZone.addEventListener('click', (e) => {
-    if (e.target.tagName !== 'INPUT') adminFileInput.click();
+document.getElementById('adminSelectBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    adminFileInput.click();
 });
 
 /* ===== Parse PDF with pdf.js ===== */
