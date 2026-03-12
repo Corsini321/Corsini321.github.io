@@ -213,14 +213,24 @@ const blogPosts = {
     },
     steveeye: {
         title_zh: 'Steve-Eye 论文研读',
-        title_en: 'Steve-Eye Paper Study — An Equip-LLM Agent Framework',
+        title_en: 'Steve-Eye Paper Study — Equipping LLM-based Embodied Agents with Visual Perception',
         sections_zh: [
-            { type: 'intro', text: 'Steve-Eye：一种面向开放世界的 LLM 智能体视觉感知框架研读报告。' },
-            { type: 'pdf', filename: 'Steve-Eye 论文研读报告.pdf', text_zh: '查看完整研读报告 (PDF)', text_en: 'View Full Study Report (PDF)' }
+            { type: 'intro', text: 'Steve-Eye：Equipping LLM-based Embodied Agents with Visual Perception in Open Worlds — 为开放世界具身智能体配备视觉感知。' },
+            { type: 'link', url: 'https://arxiv.org/abs/2310.13255', text: '论文地址：https://arxiv.org/abs/2310.13255' },
+            { type: 'section', heading: '论文的背景', text: '这篇 ICLR 2024 的论文，我觉得精准戳中了具身智能体研究的核心痛点：当下基于 LLM 的开放世界智能体，几乎都在"蒙眼玩文字游戏"。引言里"a blindfolded text-based game"的比喻，我反复品了品，实在贴切。像 Voyager、GITM 这些之前很火的工作，虽说用 LLM 做规划效果亮眼，却把 Minecraft 丰富的视觉画面全转成了文本描述，这中间的信息损耗大到难以忽视。' },
+            { type: 'section', heading: '核心方法', text: 'Steve-Eye 的核心思路，是把视觉编码器和 LLM 做端到端联合训练，搭出一套多模态输入输出的大模型。读到第三章架构图时，我注意到一个关键细节：他们用 VQ-GAN 做视觉 tokenizer，把图像编码成离散 token 后映射到文本 embedding 同源空间，再合并视觉 codebook 与语言词表，让模型既能"看"图，也能"生成"图。训练用了类 LLaVA 的两阶段策略，先冻结主干做特征对齐，再解冻 LLM 做全量指令微调。数据上用 ChatGPT 半自动生成了 85 万条覆盖三大维度的指令数据，这套数据体系，我觉得是这篇工作里极易被忽略的核心贡献。' },
+            { type: 'section', heading: '实验结果', text: '我最关注的是第四章的几组对照。环境视觉描述任务里，CLIP 大幅超越了 Minecraft 专属预训练的 MineCLIP，物品栏识别准确率高出近 49 个百分点，作者归因于 MineCLIP 预训练缺失细粒度对齐。基础知识问答环节，13B 的 Steve-Eye 得分居然超过了 gpt-turbo-3.5，这点真的出乎我的意料。技能规划实验里，模型也在 24 个 Minecraft 任务上全面优于现有基线。' },
+            { type: 'section', heading: '亮点与不足', text: '这篇工作最值得借鉴的，是问题定义极其清晰，把具身智能体视觉缺失的核心矛盾讲得很透，给出的方案覆盖感知、知识、规划全链路，不是单点突破而是系统性解法。短板也很明确：自驱动模式下，长时程复杂任务性能下滑明显，连续帧细粒度推理能力不足；所有验证都局限在 Minecraft 环境，向真实物理场景的泛化还有很大距离。' },
+            { type: 'section', heading: '个人的感触', text: '读完最强烈的感受是，多模态绝非具身智能的锦上添花，而是核心刚需。之前惊叹于纯文本驱动智能体的能力，Steve-Eye 却让我意识到，缺失视觉的智能体本质是"残缺"的。同时我也一直在想，这套高成本的数据构建流水线，在没有完善 API 与 Wiki 支撑的环境里，还能顺利跑通吗？' }
         ],
         sections_en: [
-            { type: 'intro', text: 'Steve-Eye: An Equip-LLM Agent Framework for Open-World Visual Perception.' },
-            { type: 'pdf', filename: 'Steve-Eye 论文研读报告.pdf', text_zh: '查看完整研读报告 (PDF)', text_en: 'View Full Study Report (PDF)' }
+            { type: 'intro', text: 'Steve-Eye: Equipping LLM-based Embodied Agents with Visual Perception in Open Worlds.' },
+            { type: 'link', url: 'https://arxiv.org/abs/2310.13255', text: 'Paper: https://arxiv.org/abs/2310.13255' },
+            { type: 'section', heading: 'Background', text: 'This ICLR 2024 paper precisely targets the core pain point of embodied agent research: current LLM-based open-world agents are essentially "playing a blindfolded text-based game." The metaphor in the introduction is remarkably apt. Prior popular works like Voyager and GITM, while impressive in using LLMs for planning, converted all of Minecraft\'s rich visual content into text descriptions — the information loss in this process is too significant to ignore.' },
+            { type: 'section', heading: 'Core Method', text: 'Steve-Eye\'s core approach is end-to-end joint training of a visual encoder and LLM, building a multimodal input-output large model. Reading the architecture diagram in Chapter 3, I noticed a key detail: they use VQ-GAN as a visual tokenizer, encoding images into discrete tokens mapped to the same embedding space as text, then merging the visual codebook with the language vocabulary so the model can both "see" and "generate" images. Training uses a LLaVA-like two-stage strategy: first freezing the backbone for feature alignment, then unfreezing the LLM for full instruction fine-tuning. They semi-automatically generated 850K instruction data entries covering three dimensions using ChatGPT — this data system is, in my view, an easily overlooked core contribution of this work.' },
+            { type: 'section', heading: 'Experimental Results', text: 'I focused most on the comparison groups in Chapter 4. In environment visual description tasks, CLIP significantly outperformed Minecraft-specific pretrained MineCLIP, with inventory recognition accuracy nearly 49 percentage points higher — the authors attribute this to MineCLIP\'s lack of fine-grained alignment in pretraining. In basic knowledge QA, the 13B Steve-Eye actually scored higher than gpt-turbo-3.5, which genuinely surprised me. In skill planning experiments, the model also comprehensively outperformed existing baselines across 24 Minecraft tasks.' },
+            { type: 'section', heading: 'Strengths & Weaknesses', text: 'The most valuable aspect of this work is its extremely clear problem definition — it thoroughly articulates the core contradiction of visual absence in embodied agents, with a solution covering the full pipeline of perception, knowledge, and planning — a systematic solution rather than a single-point breakthrough. The shortcomings are also clear: in self-driven mode, performance on long-horizon complex tasks degrades significantly, with insufficient fine-grained reasoning on consecutive frames; all validation is limited to the Minecraft environment, with considerable distance remaining for generalization to real physical scenarios.' },
+            { type: 'section', heading: 'Personal Reflections', text: 'My strongest takeaway is that multimodality is not a nice-to-have for embodied intelligence — it\'s a core necessity. I was previously amazed by the capabilities of purely text-driven agents, but Steve-Eye made me realize that agents without vision are fundamentally "incomplete." At the same time, I keep wondering: could this high-cost data construction pipeline still work smoothly in environments without well-developed APIs and Wiki support?' }
         ]
     },
     gato: {
@@ -341,12 +351,17 @@ const adminSave = document.getElementById('adminSave');
 const adminDeleteBtn = document.getElementById('adminDelete');
 let editingId = null;
 
-// Secret: Ctrl+Shift+A
-document.addEventListener('keydown', (e) => {
-    if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-        e.preventDefault();
+// Secret: click footer 5 times
+let footerClicks = 0;
+let footerTimer = null;
+document.querySelector('.footer').addEventListener('click', () => {
+    footerClicks++;
+    clearTimeout(footerTimer);
+    if (footerClicks >= 5) {
+        footerClicks = 0;
         openAdmin();
     }
+    footerTimer = setTimeout(() => { footerClicks = 0; }, 2000);
 });
 
 function openAdmin() {
