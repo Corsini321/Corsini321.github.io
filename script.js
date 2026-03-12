@@ -611,6 +611,7 @@ function showEditForm(data, isEdit) {
     document.getElementById('af_title_en').value = data.title_en || '';
     document.getElementById('af_desc_zh').value = data.desc_zh || '';
     document.getElementById('af_desc_en').value = data.desc_en || '';
+    document.getElementById('af_link').value = data.link || '';
     adminDeleteBtn.style.display = isEdit ? '' : 'none';
 
     // Render sections
@@ -618,20 +619,49 @@ function showEditForm(data, isEdit) {
 
     // Add intro if exists
     if (data.intro) {
-        addSectionBlock('intro', '引言', data.intro);
+        addSectionBlock('intro', '', data.intro, '', data.intro_en || '');
     }
 
     // Add content sections
     if (data.sections) {
         data.sections.forEach(s => {
-            addSectionBlock(s.type || 'section', s.heading || '', s.text || '');
+            addSectionBlock(s.type || 'section', s.heading || '', s.text || '', s.heading_en || '', s.text_en || '');
         });
     }
 }
 
-function addSectionBlock(type, heading, text) {
+function addSectionBlock(type, heading, text, headingEn, textEn) {
     const block = document.createElement('div');
     block.className = 'admin-section-block';
+
+    function buildContent(t, h, txt, hEn, txtEn) {
+        if (t === 'divider') return '';
+        let html = '';
+        if (t === 'section') {
+            html += '<div class="admin-section-lang-group">'
+                + '<span class="admin-section-lang-label">中文</span>'
+                + '<input type="text" class="section-heading" placeholder="章节标题" value="' + (h || '').replace(/"/g, '&quot;') + '">'
+                + '<textarea class="section-text" rows="3" placeholder="中文内容...">' + (txt || '') + '</textarea>'
+                + '</div>'
+                + '<div class="admin-section-lang-group">'
+                + '<span class="admin-section-lang-label">EN</span>'
+                + '<input type="text" class="section-heading-en" placeholder="Section heading (English)" value="' + (hEn || '').replace(/"/g, '&quot;') + '">'
+                + '<textarea class="section-text-en" rows="3" placeholder="English content (optional)...">' + (txtEn || '') + '</textarea>'
+                + '</div>';
+        } else {
+            // intro
+            html += '<div class="admin-section-lang-group">'
+                + '<span class="admin-section-lang-label">中文</span>'
+                + '<textarea class="section-text" rows="3" placeholder="中文引言...">' + (txt || '') + '</textarea>'
+                + '</div>'
+                + '<div class="admin-section-lang-group">'
+                + '<span class="admin-section-lang-label">EN</span>'
+                + '<textarea class="section-text-en" rows="3" placeholder="English intro (optional)...">' + (txtEn || '') + '</textarea>'
+                + '</div>';
+        }
+        return html;
+    }
+
     block.innerHTML =
         '<div class="admin-section-type">' +
             '<button data-type="intro"' + (type === 'intro' ? ' class="active"' : '') + '>引言</button>' +
@@ -639,10 +669,7 @@ function addSectionBlock(type, heading, text) {
             '<button data-type="divider"' + (type === 'divider' ? ' class="active"' : '') + '>分割线</button>' +
         '</div>' +
         '<button class="admin-section-remove">&times;</button>' +
-        (type !== 'divider' ?
-            (type === 'section' ? '<input type="text" class="section-heading" placeholder="章节标题" value="' + (heading || '').replace(/"/g, '&quot;') + '" style="margin-bottom:8px">' : '') +
-            '<textarea class="section-text" rows="4" placeholder="内容...">' + (text || '') + '</textarea>'
-            : '');
+        buildContent(type, heading, text, headingEn, textEn);
 
     // Type switching
     block.querySelectorAll('.admin-section-type button').forEach(btn => {
@@ -650,37 +677,23 @@ function addSectionBlock(type, heading, text) {
             block.querySelectorAll('.admin-section-type button').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             const newType = btn.dataset.type;
-            // Re-render content area
-            const existingHeading = block.querySelector('.section-heading');
-            const existingText = block.querySelector('.section-text');
-            const headingVal = existingHeading ? existingHeading.value : '';
-            const textVal = existingText ? existingText.value : '';
-            // Remove old inputs
-            if (existingHeading) existingHeading.remove();
-            if (existingText) existingText.remove();
+            // Save existing values
+            const oldH = block.querySelector('.section-heading');
+            const oldT = block.querySelector('.section-text');
+            const oldHEn = block.querySelector('.section-heading-en');
+            const oldTEn = block.querySelector('.section-text-en');
+            const hVal = oldH ? oldH.value : '';
+            const tVal = oldT ? oldT.value : '';
+            const hEnVal = oldHEn ? oldHEn.value : '';
+            const tEnVal = oldTEn ? oldTEn.value : '';
+            // Remove old content
+            block.querySelectorAll('.admin-section-lang-group').forEach(g => g.remove());
             if (newType === 'divider') return;
             const removeBtn = block.querySelector('.admin-section-remove');
-            if (newType === 'section') {
-                const inp = document.createElement('input');
-                inp.type = 'text';
-                inp.className = 'section-heading';
-                inp.placeholder = '章节标题';
-                inp.value = headingVal;
-                inp.style.marginBottom = '8px';
-                removeBtn.after(inp);
-                const ta = document.createElement('textarea');
-                ta.className = 'section-text';
-                ta.rows = 4;
-                ta.placeholder = '内容...';
-                ta.value = textVal;
-                inp.after(ta);
-            } else {
-                const ta = document.createElement('textarea');
-                ta.className = 'section-text';
-                ta.rows = 4;
-                ta.placeholder = '引言内容...';
-                ta.value = textVal;
-                removeBtn.after(ta);
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = buildContent(newType, hVal, tVal, hEnVal, tEnVal);
+            while (tempDiv.firstChild) {
+                block.appendChild(tempDiv.firstChild);
             }
         });
     });
@@ -694,7 +707,7 @@ function addSectionBlock(type, heading, text) {
 }
 
 adminAddSection.addEventListener('click', () => {
-    addSectionBlock('section', '', '');
+    addSectionBlock('section', '', '', '', '');
 });
 
 /* ===== Edit existing post ===== */
@@ -704,9 +717,24 @@ window.editAdminPost = function(id) {
     if (!p) return;
 
     // Reconstruct data for the form
-    const introSection = (p.sections_zh || []).find(s => s.type === 'intro');
+    const introZh = (p.sections_zh || []).find(s => s.type === 'intro');
+    const introEn = (p.sections_en || []).find(s => s.type === 'intro');
     const pdfSection = (p.sections_zh || []).find(s => s.type === 'pdf');
-    const contentSections = (p.sections_zh || []).filter(s => s.type !== 'intro' && s.type !== 'pdf');
+    const linkSection = (p.sections_zh || []).find(s => s.type === 'link');
+    const contentZh = (p.sections_zh || []).filter(s => s.type !== 'intro' && s.type !== 'pdf' && s.type !== 'link');
+    const contentEn = (p.sections_en || []).filter(s => s.type !== 'intro' && s.type !== 'pdf' && s.type !== 'link');
+
+    // Merge zh and en sections
+    const mergedSections = contentZh.map((s, i) => {
+        const en = contentEn[i] || {};
+        return {
+            type: s.type,
+            heading: s.heading || '',
+            text: s.text || '',
+            heading_en: en.heading || '',
+            text_en: en.text || ''
+        };
+    });
 
     showEditForm({
         id: id,
@@ -715,8 +743,10 @@ window.editAdminPost = function(id) {
         desc_zh: p.desc_zh || '',
         desc_en: p.desc_en || '',
         pdf: pdfSection ? pdfSection.filename : (p.pdfFilename || ''),
-        intro: introSection ? introSection.text : '',
-        sections: contentSections
+        link: linkSection ? linkSection.url : (p.link || ''),
+        intro: introZh ? introZh.text : '',
+        intro_en: introEn ? introEn.text : '',
+        sections: mergedSections
     }, true);
 };
 
@@ -745,10 +775,13 @@ adminSave.addEventListener('click', () => {
     const descZh = document.getElementById('af_desc_zh').value.trim();
     const descEn = document.getElementById('af_desc_en').value.trim();
     const pdf = document.getElementById('af_pdf').value.trim();
+    const link = document.getElementById('af_link').value.trim();
 
     // Collect sections from the editor
     const sectionsZh = [];
     const sectionsEn = [];
+
+    // Add link right after intro (if provided)
     const blocks = adminSections.querySelectorAll('.admin-section-block');
 
     blocks.forEach(block => {
@@ -756,8 +789,12 @@ adminSave.addEventListener('click', () => {
         const type = activeType ? activeType.dataset.type : 'section';
         const headingEl = block.querySelector('.section-heading');
         const textEl = block.querySelector('.section-text');
+        const headingEnEl = block.querySelector('.section-heading-en');
+        const textEnEl = block.querySelector('.section-text-en');
         const heading = headingEl ? headingEl.value.trim() : '';
         const text = textEl ? textEl.value.trim() : '';
+        const headingEn = headingEnEl ? headingEnEl.value.trim() : '';
+        const textEn = textEnEl ? textEnEl.value.trim() : '';
 
         if (type === 'divider') {
             sectionsZh.push({ type: 'divider' });
@@ -765,15 +802,26 @@ adminSave.addEventListener('click', () => {
         } else if (type === 'intro') {
             if (text) {
                 sectionsZh.push({ type: 'intro', text: text });
-                sectionsEn.push({ type: 'intro', text: text });
+                sectionsEn.push({ type: 'intro', text: textEn || text });
             }
         } else if (type === 'section') {
             if (text) {
                 sectionsZh.push({ type: 'section', heading: heading || '正文', text: text });
-                sectionsEn.push({ type: 'section', heading: heading || 'Content', text: text });
+                sectionsEn.push({ type: 'section', heading: headingEn || heading || 'Content', text: textEn || text });
             }
         }
     });
+
+    // Add paper link after intro
+    if (link) {
+        const linkZh = { type: 'link', url: link, text: '论文地址：' + link };
+        const linkEn = { type: 'link', url: link, text: 'Paper: ' + link };
+        // Insert after intro (index 1 if intro exists, else 0)
+        const introIdx = sectionsZh.findIndex(s => s.type === 'intro');
+        const insertAt = introIdx >= 0 ? introIdx + 1 : 0;
+        sectionsZh.splice(insertAt, 0, linkZh);
+        sectionsEn.splice(insertAt, 0, linkEn);
+    }
 
     // Add PDF link at the end
     if (pdf) {
@@ -788,6 +836,7 @@ adminSave.addEventListener('click', () => {
         card_en: titleEn || titleZh,
         desc_zh: descZh,
         desc_en: descEn || descZh,
+        link: link,
         pdfFilename: pdf,
         sections_zh: sectionsZh,
         sections_en: sectionsEn
