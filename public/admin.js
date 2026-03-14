@@ -1,5 +1,41 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+/* ===== Login ===== */
+const loginScreen = document.getElementById('loginScreen');
+const loginForm = document.getElementById('loginForm');
+const loginError = document.getElementById('loginError');
+
+async function checkAuth() {
+    try {
+        const res = await fetch('/api/auth-check');
+        const d = await res.json();
+        if (d.ok) { loginScreen.classList.add('hidden'); init(); }
+    } catch(e) {}
+}
+
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    loginError.textContent = '';
+    const pw = document.getElementById('loginPassword').value;
+    try {
+        const res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password: pw })
+        });
+        if (res.ok) {
+            loginScreen.classList.add('hidden');
+            init();
+        } else {
+            loginError.textContent = '密码错误';
+        }
+    } catch(e) {
+        loginError.textContent = '连接失败';
+    }
+});
+
+checkAuth();
+
 /* ===== API Helpers ===== */
 async function apiGet(url) {
     const res = await fetch(url);
@@ -308,6 +344,5 @@ function esc(s){return s?String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').
 
 /* ===== Init ===== */
 async function init(){data=await apiGet('/api/data')||{};loadAll();}
-init();
 
 }); // DOMContentLoaded

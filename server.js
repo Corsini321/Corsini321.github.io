@@ -3,9 +3,13 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const crypto = require('crypto');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || '010815';
+const sessions = new Map();
 
 // ===== Paths =====
 const DATA_DIR = path.join(__dirname, 'data');
@@ -222,8 +226,39 @@ if (!fs.existsSync(POSTS_FILE)) {
 
 // ===== Middleware =====
 app.use(express.json({ limit: '10mb' }));
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(UPLOADS_DIR));
+
+// ===== Auth =====
+function requireAuth(req, res, next) {
+    const token = req.cookies.token;
+    if (token && sessions.has(token)) return next();
+    res.status(401).json({ error: 'Unauthorized' });
+}
+
+app.post('/api/login', (req, res) => {
+    const { password } = req.body;
+    if (password === ADMIN_PASSWORD) {
+        const token = crypto.randomBytes(32).toString('hex');
+        sessions.set(token, Date.now());
+        res.cookie('token', token, { httpOnly: true, maxAge: 7 * 24 * 3600 * 1000, sameSite: 'lax' });
+        return res.json({ ok: true });
+    }
+    res.status(403).json({ error: 'Wrong password' });
+});
+
+app.post('/api/logout', (req, res) => {
+    const token = req.cookies.token;
+    if (token) sessions.delete(token);
+    res.clearCookie('token');
+    res.json({ ok: true });
+});
+
+app.get('/api/auth-check', (req, res) => {
+    const token = req.cookies.token;
+    res.json({ ok: !!(token && sessions.has(token)) });
+});
 
 // ===== Multer for PDF upload =====
 const storage = multer.diskStorage({
@@ -254,12 +289,12 @@ app.get('/api/data', (req, res) => {
     res.json(data);
 });
 
-app.put('/api/data', (req, res) => {
+app.put('/api/data', requireAuth, (req, res) => {
     writeJSON(SITE_FILE, req.body);
     res.json({ ok: true });
 });
 
-app.post('/api/data/reset', (req, res) => {
+app.post('/api/data/reset', requireAuth, (req, res) => {
     writeJSON(SITE_FILE, DEFAULTS);
     res.json({ ok: true, data: DEFAULTS });
 });
@@ -277,14 +312,14 @@ app.get('/api/posts/:id', (req, res) => {
     res.json(post);
 });
 
-app.put('/api/posts/:id', (req, res) => {
+app.put('/api/posts/:id', requireAuth, (req, res) => {
     const posts = readJSON(POSTS_FILE, {});
     posts[req.params.id] = req.body;
     writeJSON(POSTS_FILE, posts);
     res.json({ ok: true });
 });
 
-app.delete('/api/posts/:id', (req, res) => {
+app.delete('/api/posts/:id', requireAuth, (req, res) => {
     const posts = readJSON(POSTS_FILE, {});
     delete posts[req.params.id];
     writeJSON(POSTS_FILE, posts);
@@ -292,7 +327,7 @@ app.delete('/api/posts/:id', (req, res) => {
 });
 
 // --- PDF Upload ---
-app.post('/api/upload', upload.single('pdf'), (req, res) => {
+app.post('/api/upload', requireAuth, upload.single('pdf'), (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
     const originalName = Buffer.from(req.file.originalname, 'latin1').toString('utf8');
     res.json({ filename: originalName });
