@@ -24,6 +24,24 @@
     "items": [
       {
         "num": "01",
+        "tag": "C++ / ECS / Jolt / Vulkan",
+        "visual": "stealth-v",
+        "link": "https://github.com/Sinthome-Ludens/CSC8507-08",
+        "video": "https://b23.tv/leyFoZo",
+        "label_zh": "团队项目 · 2026.01 - 至今",
+        "label_en": "Team Project · Jan 2026 - Present",
+        "title_zh": "多人合作潜行游戏",
+        "title_en": "Multiplayer Stealth Game",
+        "desc_zh": "基于 ECS 架构并接入实时图形渲染引擎的 3D 多人合作潜行动作游戏。实现玩家行为系统（移动/CQC/伪装）、四状态敌人 AI + 导航寻路、道具交互与死亡判定，集成音频系统并完成 PS5 平台适配，配套 ImGui 调试面板与性能排查。",
+        "desc_en": "A 3D co-op stealth action game built on ECS architecture and integrated with a real-time graphics rendering engine. It features player behavior systems (movement/CQC/disguise), 4-state enemy AI + navigation pathfinding, item interaction and death logic, with audio integration and PS5 adaptation completed, plus ImGui debugging and performance profiling.",
+        "cta_zh": "查看源码 ↗",
+        "cta_en": "View Source ↗",
+        "video_label_zh": "演示视频",
+        "video_label_en": "Demo Video",
+        "disabled": false
+      },
+      {
+        "num": "02",
         "tag": "C++ / OpenGL / GLSL",
         "visual": "render-v",
         "link": "https://github.com/Corsini321/Real-Time-Graphics-Engine",
@@ -39,24 +57,6 @@
         "video_label_zh": "演示视频",
         "video_label_en": "Demo Video",
         "disabled": false
-      },
-      {
-        "num": "02",
-        "tag": "C++ / ECS / Jolt / Vulkan",
-        "visual": "stealth-v",
-        "link": "",
-        "video": "",
-        "label_zh": "团队项目 · 2026.01 - 至今",
-        "label_en": "Team Project · Jan 2026 - Present",
-        "title_zh": "多人合作潜行游戏",
-        "title_en": "Multiplayer Stealth Game",
-        "desc_zh": "基于 ECS 架构的 3D 潜行动作游戏。玩家行为系统（移动/CQC/伪装），四状态敌人 AI + 导航寻路，道具交互与死亡判定，ImGui 调试面板与性能排查。",
-        "desc_en": "A 3D stealth action game built on ECS architecture. Player behavior system (movement/CQC/disguise), 4-state enemy AI + nav pathfinding, item interaction & death logic, ImGui debug panel & performance profiling.",
-        "cta_zh": "仓库暂未开放",
-        "cta_en": "Repo Not Public Yet",
-        "video_label_zh": "",
-        "video_label_en": "",
-        "disabled": true
       },
       {
         "num": "03",
